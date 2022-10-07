@@ -146,10 +146,9 @@ public class Document {
     public String toString(){
         return  "\n ID  =" + this.id +
                 "\n Date  =" + this.date +
-                "\n " + this.idConsultation +
-                "\n" + this.montantPaye +
-                "\n" + this.type +
+                "\n Code Consultaion  =" + this.idConsultation +
+                "\n Montant Paye  =" + this.montantPaye +
+                "\n Type Document  =" + this.type +
                 "\n";
-
     }
 }
