@@ -11,13 +11,14 @@ import scala.sys.process.ProcessBuilderImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import static helper.SystemeHelper.*;
 
 public class Main {
     public static boolean repeat = true;
     public static void main(String[] args) {
-
+        Scanner scanner = new Scanner(System.in);
         while(repeat){
             println("\t ---- \t Welcome to MaCNSS Dashboard \t ---- ");
             println("\t 1 - \t Continuer en tant qu'Admin ");
@@ -25,7 +26,7 @@ public class Main {
             println("\t 3 - \t Continuer en tant que Bénéficiaire du MaCNSS ");
             println("\t 4 - \t Exit ");
 
-            switch(scan().nextInt()){
+            switch(scanner.nextInt()){
                 case 1 :
                     adminWorkflow();
                     break;
@@ -44,35 +45,51 @@ public class Main {
 
     //Agent workflow
     private static void agentWorkflow () {
+        Scanner scanner = new Scanner(System.in);
+        boolean repeat = true;
         Agent agent = new Agent();
         Dossier dossier = new Dossier();
-        List<Consultation> listConsultations = new ArrayList<Consultation>();
+        List<Consultation> listConsultations;
         Patient patient = new Patient();
         if(!agent.authenticate()){
             return;
         };
 
-        println("\t --- Agent Menu ---");
-        println("1 - \t Ajouter nouveau dossier :");
-        println("2 - \t Vérifier dossiers existants :");
-        println("3 - \t Exit :");
+        while (repeat) {
+            println("\t --- Agent Menu ---");
+            println("1 - \t Ajouter nouveau dossier :");
+            println("2 - \t Vérifier dossiers existants :");
+            println("3 - \t Exit :");
 
-        switch (scan().nextInt()){
-            case 1 :
-                dossier.addNewDossier();
-                listConsultations = populateDossier(dossier.getNbrConsultation(), dossier.getCode());
+            switch (scanner.nextInt()) {
+                case 1:
+                    dossier.addNewDossier();
+                    listConsultations = populateDossier(dossier.getNbrConsultation(), dossier.getCode());
 
-                //Process medical folder and display result
-                dossier.getProcessResult(listConsultations);
-                println("TOTAL Refund : " + dossier.totalRefund);
-                Map<String, String> patientMap = patient.patientController.getPatientData(dossier.getMatrecule());
-                SimpleEmail.sendSimpleEmail(patientMap.get("email"), "<h3>Total du remboursement </h3>", String.valueOf(dossier.totalRefund));
-                break;
-            case 2 :
-                dossier.displayPatientAllPendingFolders();
-                break;
-            case 3 :
-                return;
+                    //Process medical folder and display result
+                    dossier.getProcessResult(listConsultations);
+                    println("TOTAL Refund : " + dossier.totalRefund);
+                    Map<String, String> patientMap = patient.patientController.getPatientData(dossier.getMatrecule());
+
+                    println("\t 1 - Valider le dossier :");
+                    println("\t 2 - Garder le dossier en attente :");
+                    switch (scanner.nextInt()) {
+                        case 1:
+                            SimpleEmail.sendSimpleEmail(patientMap.get("email"), "Total du remboursement", "<h2> Total du remboursement : <h2>" + dossier.totalRefund + "DH");
+                            println("\t 1 - Le dossier est validé! Un email à été envoyé au patient! :");
+                            break;
+                        case 2:
+                            SimpleEmail.sendSimpleEmail(patientMap.get("email"), "Etat de dossier MaCNSS", "<h3> Votre dossier est en cours d'attente merci pour votre compéhension! </h3>");
+                            break;
+                    }
+                    break;
+                case 2:
+                    dossier.displayPatientAllPendingFolders();
+                    break;
+                case 3:
+                    repeat = false;
+                    break;
+            }
         }
     }
     

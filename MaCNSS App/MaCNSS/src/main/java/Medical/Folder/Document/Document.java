@@ -124,7 +124,6 @@ public class Document {
         setNom(nomDocument);
         //create document
         setId(this.controller.createDocument(idConsultation, this.date, this.montantPaye, this.type));
-        println(getType()+" "+getNom()+" here!!");
         setPercentage(this.controller.getRefundPercentage(getType(), getNom()));
         if(this.getId() != -1){
             println("Document added successfully");
@@ -144,12 +143,11 @@ public class Document {
 
     @Override
     public String toString(){
-        return  "\n" + this.id +
-                "\n" + this.date +
-                "\n" + this.idConsultation +
-                "\n" + this.montantPaye +
-                "\n" + this.type +
+        return  "\n ID  =" + this.id +
+                "\n Date  =" + this.date +
+                "\n Code Consultaion  =" + this.idConsultation +
+                "\n Montant Paye  =" + this.montantPaye +
+                "\n Type Document  =" + this.type +
                 "\n";
-
     }
 }

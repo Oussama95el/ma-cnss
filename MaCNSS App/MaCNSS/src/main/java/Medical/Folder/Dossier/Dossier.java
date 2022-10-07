@@ -149,6 +149,7 @@ public class Dossier {
         //input matricule of patient
         println("Entrer le matricule du patient :");
         long idMatricule = scan().nextLong();
+
         ArrayList<Dossier> dossiers = controller.setDossierList(idMatricule);
         List<Dossier> pendingDossier = dossiers.stream().filter(dossier -> dossier.status.equals("EN_ATTENTE")).toList();
         pendingDossier.forEach(System.out::println);
