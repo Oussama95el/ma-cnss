@@ -130,7 +130,7 @@ public class ConsultationController {
 
     public boolean checkDateValidity(LocalDate date) {
         int daysOfValidity = 60;
-        if(date.until(LocalDate.now(), ChronoUnit.DAYS) > daysOfValidity){
+        if(date.until(LocalDate.now(), ChronoUnit.DAYS) < daysOfValidity){
             return true;
         }
         return false;
