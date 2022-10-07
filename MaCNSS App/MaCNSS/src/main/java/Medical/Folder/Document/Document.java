@@ -144,9 +144,9 @@ public class Document {
 
     @Override
     public String toString(){
-        return  "\n" + this.id +
-                "\n" + this.date +
-                "\n" + this.idConsultation +
+        return  "\n ID  =" + this.id +
+                "\n Date  =" + this.date +
+                "\n " + this.idConsultation +
                 "\n" + this.montantPaye +
                 "\n" + this.type +
                 "\n";
