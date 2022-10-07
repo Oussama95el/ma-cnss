@@ -3,21 +3,27 @@ package Medical.Folder.Document;
 import Database.DBConnection;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+
+import static helper.SystemeHelper.println;
 
 public class DocumentModel {
+    private String table;
     protected DBConnection db = new DBConnection();
     ResultSet result = null;
 
     public DocumentModel(){
         db.establishConnection();
+        table = "document";
     }
     /**
-     * Check if consultation exist using the parameter giving
+     * Check if document exist using the parameter giving
      * @param idConsultation int
      * @return Boolean
      */
-    public Boolean checkConsultationExist (int idConsultation) {
-        String query = "SELECT * FROM consultation WHERE code_dossier = ?";
+    public Boolean checkDocumentExist (int idConsultation) {
+        String query = "SELECT * FROM "+ table +" WHERE id_consultation = ?";
         if(db.prepare(query)){
             db.setParam(1, idConsultation);
             db.execute();
@@ -41,6 +47,37 @@ public class DocumentModel {
             System.out.print("No result found");
         }
 
+        return result;
+    }
+
+    public ResultSet addDocument (long idConsultation, LocalDate date, float montantPaye, String type) throws SQLException {
+        ResultSet resultSet = null;
+        String query = "INSERT INTO " + table + " (id_consultation, date, type, montant_paye) VALUES (?, ?, ?::typedocument, ?) RETURNING id";
+        if(db.prepare(query)){
+            db.setParam(1, idConsultation);
+            db.setParam(2, date);
+            db.setParam(3, type);
+            db.setParam(4, montantPaye);
+            resultSet = db.execute();
+            if(resultSet.next()){
+                return resultSet;
+            };
+        }
+        return resultSet;
+    }
+    public ResultSet getDocumentWithName (String table, String nom) throws  SQLException{
+        println(table+" !!! "+nom);
+        ResultSet result = null;
+        String query = "SELECT * FROM " + table + " WHERE nom = ? LIMIT 1";
+        if (db.prepare(query)) {
+            db.setParam(1, nom);
+            result = db.execute();
+            if(result.next()){
+                return result;
+            };
+        } else {
+            System.out.print("No result found");
+        }
         return result;
     }
     public void closeQuery () {

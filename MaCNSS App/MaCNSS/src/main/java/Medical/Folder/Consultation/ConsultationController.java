@@ -1,9 +1,16 @@
 package Medical.Folder.Consultation;
 
+import helper.Specialite;
+
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static helper.SystemeHelper.print;
 
@@ -80,4 +87,58 @@ public class ConsultationController {
         }
         return consultations;
     }
+
+    public long createConsultation (long codeDossier, int idSpecialité, LocalDate date, boolean isConjoint, int montantPaye,  int numDocuments) {
+        long id_consultation = -1;
+        try{
+            ResultSet resultSet = this.consultationModel.addConsultation(codeDossier, idSpecialité, date, isConjoint, montantPaye, numDocuments);
+            if(resultSet != null){
+                id_consultation = resultSet.getLong("id");
+            }
+                //close resultset and statement
+            this.consultationModel.closeQuery();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return id_consultation;
+    }
+
+    public List<Specialite> getAllSpecialites () {
+        List<Specialite> listSpecialite = new ArrayList<>();
+        ResultSet result = consultationModel.getAllSpecialites();
+        try{
+            while(result.next()){
+                Specialite specialite = new Specialite();
+                specialite.id = result. getInt("id");
+                specialite.nom = result.getString("nom");
+                listSpecialite.add(specialite);
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        } finally {
+            //close resultset and statement
+            consultationModel.closeQuery();
+            return listSpecialite;
+        }
+    }
+
+    public double setRefundsPrice(int id){
+        if (id == 1){
+            return 80;
+        }else return 120;
+    }
+
+    public boolean checkDateValidity(LocalDate date) {
+        int daysOfValidity = 60;
+        if(date.until(LocalDate.now(), ChronoUnit.DAYS) > daysOfValidity){
+            return true;
+        }
+        return false;
+    }
+
+    public void closeDBConnection () {
+        this.consultationModel.closeDBConnection();
+    }
+
+
 }

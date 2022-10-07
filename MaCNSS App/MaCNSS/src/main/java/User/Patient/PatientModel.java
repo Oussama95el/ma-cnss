@@ -17,10 +17,6 @@ public class PatientModel extends User {
         table = "patient";
     }
 
-    public void closeDBConnection () {
-        db.closeConnection();
-        System.out.println("Closed DB conn");
-    }
 
     public boolean isPatientExist (String email, String passw) {
         String query = "SELECT * FROM " + table + " WHERE email = ? AND password = ? LIMIT 1";
@@ -32,6 +28,14 @@ public class PatientModel extends User {
         return !db.isEmpty();
     }
 
+    public boolean isPatientExistByMatrecule (long matrecule) {
+        String query = "SELECT * FROM patient WHERE id_matricule = ?";
+        if(db.prepare(query)){
+            db.setParam(1, matrecule);
+            db.execute();
+        }
+        return !db.isEmpty();
+    }
     public ResultSet getPatientByMatricule (long id_matricule) {
         ResultSet result = null;
         String query = "SELECT * FROM " + table + " WHERE id_matricule = ? LIMIT 1";
@@ -49,6 +53,29 @@ public class PatientModel extends User {
             e.printStackTrace();
         }
         return result;
+    }
+    public ResultSet getPatientByEmail (String email) {
+        ResultSet result = null;
+        String query = "SELECT * FROM " + table + " WHERE email = ? LIMIT 1";
+        try {
+            if (db.prepare(query)) {
+                db.setParam(1, email);
+                result = db.execute();
+                if(result.next()){
+                    return result;
+                } else {
+                    System.out.print("No result found");
+                }
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public void closeDBConnection () {
+        db.closeConnection();
+        System.out.println("Closed DB conn");
     }
 
     public void closeQuery () {
